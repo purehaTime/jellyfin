@@ -25,6 +25,7 @@ public class PhotoProvider : ICustomMetadataProvider<Photo>, IForcedProvider, IH
 {
     private readonly ILogger<PhotoProvider> _logger;
     private readonly IImageProcessor _imageProcessor;
+    private readonly IDirectoryService _directoryService;
 
     // Other extensions might cause taglib to hang
     private readonly string[] _includeExtensions = [".jpg", ".jpeg", ".png", ".tiff", ".cr2", ".webp", ".avif"];
@@ -34,21 +35,23 @@ public class PhotoProvider : ICustomMetadataProvider<Photo>, IForcedProvider, IH
     /// </summary>
     /// <param name="logger">The logger.</param>
     /// <param name="imageProcessor">The image processor.</param>
-    public PhotoProvider(ILogger<PhotoProvider> logger, IImageProcessor imageProcessor)
+    /// <param name="directoryService">The directory service.</param>
+    public PhotoProvider(ILogger<PhotoProvider> logger, IImageProcessor imageProcessor, IDirectoryService directoryService)
     {
         _logger = logger;
         _imageProcessor = imageProcessor;
+        _directoryService = directoryService;
     }
 
     /// <inheritdoc />
     public string Name => "Embedded Information";
 
     /// <inheritdoc />
-    public bool HasChanged(BaseItem item, IDirectoryService directoryService)
+    public bool HasChanged(BaseItem item)
     {
         if (item.IsFileProtocol)
         {
-            var file = directoryService.GetFile(item.Path);
+            var file = _directoryService.GetFile(item.Path);
             return file is not null && file.LastWriteTimeUtc != item.DateModified;
         }
 

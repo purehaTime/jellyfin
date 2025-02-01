@@ -15,7 +15,6 @@ namespace MediaBrowser.Controller.IO
         /// <summary>
         /// Gets the filtered file system entries.
         /// </summary>
-        /// <param name="directoryService">The directory service.</param>
         /// <param name="path">The path.</param>
         /// <param name="fileSystem">The file system.</param>
         /// <param name="appHost">The application host.</param>
@@ -26,7 +25,6 @@ namespace MediaBrowser.Controller.IO
         /// <returns>Dictionary{System.StringFileSystemInfo}.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="path" /> is <c>null</c> or empty.</exception>
         public static FileSystemMetadata[] GetFilteredFileSystemEntries(
-            IDirectoryService directoryService,
             string path,
             IFileSystem fileSystem,
             IServerApplicationHost appHost,
@@ -36,9 +34,9 @@ namespace MediaBrowser.Controller.IO
             bool resolveShortcuts = true)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
-
             ArgumentNullException.ThrowIfNull(args);
 
+            var directoryService = new DirectoryService(fileSystem);
             var entries = directoryService.GetFileSystemEntries(path);
 
             if (!resolveShortcuts && flattenFolderDepth == 0)
@@ -82,7 +80,7 @@ namespace MediaBrowser.Controller.IO
                 }
                 else if (flattenFolderDepth > 0 && isDirectory)
                 {
-                    foreach (var child in GetFilteredFileSystemEntries(directoryService, fullName, fileSystem, appHost, logger, args, flattenFolderDepth: flattenFolderDepth - 1, resolveShortcuts: resolveShortcuts))
+                    foreach (var child in GetFilteredFileSystemEntries(fullName, fileSystem, appHost, logger, args, flattenFolderDepth: flattenFolderDepth - 1, resolveShortcuts: resolveShortcuts))
                     {
                         dict[child.FullName] = child;
                     }

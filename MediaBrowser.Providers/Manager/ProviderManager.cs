@@ -385,7 +385,7 @@ namespace MediaBrowser.Providers.Manager
                 item,
                 libraryOptions,
                 options,
-                new ImageRefreshOptions(new DirectoryService(_fileSystem)),
+                new ImageRefreshOptions(),
                 includeDisabled).OfType<IRemoteImageProvider>();
         }
 

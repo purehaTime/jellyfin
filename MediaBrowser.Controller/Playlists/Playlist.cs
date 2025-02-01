@@ -132,7 +132,7 @@ namespace MediaBrowser.Controller.Playlists
             return [];
         }
 
-        protected override Task ValidateChildrenInternal(IProgress<double> progress, bool recursive, bool refreshChildMetadata, bool allowRemoveRoot, MetadataRefreshOptions refreshOptions, IDirectoryService directoryService, CancellationToken cancellationToken)
+        protected override Task ValidateChildrenInternal(IProgress<double> progress, bool recursive, bool refreshChildMetadata, bool allowRemoveRoot, MetadataRefreshOptions refreshOptions, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
@@ -142,7 +142,7 @@ namespace MediaBrowser.Controller.Playlists
             return GetPlayableItems(user, query);
         }
 
-        protected override IEnumerable<BaseItem> GetNonCachedChildren(IDirectoryService directoryService)
+        protected override IEnumerable<BaseItem> GetNonCachedChildren()
         {
             return [];
         }

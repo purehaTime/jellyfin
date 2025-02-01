@@ -15,6 +15,7 @@ namespace MediaBrowser.LocalMetadata.Providers
     {
         private readonly ILogger<BoxSetXmlParser> _logger;
         private readonly IProviderManager _providerManager;
+        private readonly IDirectoryService _directoryService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BoxSetXmlProvider"/> class.
@@ -22,11 +23,13 @@ namespace MediaBrowser.LocalMetadata.Providers
         /// <param name="fileSystem">Instance of the <see cref="IFileSystem"/> interface.</param>
         /// <param name="logger">Instance of the <see cref="ILogger{BoxSetXmlParser}"/> interface.</param>
         /// <param name="providerManager">Instance of the <see cref="IProviderManager"/> interface.</param>
-        public BoxSetXmlProvider(IFileSystem fileSystem, ILogger<BoxSetXmlParser> logger, IProviderManager providerManager)
+        /// <param name="directoryService">The directory service.</param>
+        public BoxSetXmlProvider(IFileSystem fileSystem, ILogger<BoxSetXmlParser> logger, IProviderManager providerManager, IDirectoryService directoryService)
             : base(fileSystem)
         {
             _logger = logger;
             _providerManager = providerManager;
+            _directoryService = directoryService;
         }
 
         /// <inheritdoc />
@@ -36,9 +39,9 @@ namespace MediaBrowser.LocalMetadata.Providers
         }
 
         /// <inheritdoc />
-        protected override FileSystemMetadata? GetXmlFile(ItemInfo info, IDirectoryService directoryService)
+        protected override FileSystemMetadata? GetXmlFile(ItemInfo info)
         {
-            return directoryService.GetFile(Path.Combine(info.Path, "collection.xml"));
+            return _directoryService.GetFile(Path.Combine(info.Path, "collection.xml"));
         }
     }
 }

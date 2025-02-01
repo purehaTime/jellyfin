@@ -43,6 +43,8 @@ namespace MediaBrowser.Providers.MediaInfo
         /// </summary>
         private readonly NamingOptions _namingOptions;
 
+        private readonly IDirectoryService _directoryService;
+
         /// <summary>
         /// The <see cref="DlnaProfileType"/> of the files this resolver should resolve.
         /// </summary>
@@ -55,6 +57,7 @@ namespace MediaBrowser.Providers.MediaInfo
         /// <param name="localizationManager">The localization manager.</param>
         /// <param name="mediaEncoder">The media encoder.</param>
         /// <param name="fileSystem">The file system.</param>
+        /// <param name="directoryService">The directory service.</param>
         /// <param name="namingOptions">The <see cref="NamingOptions"/> object containing FileExtensions, MediaDefaultFlags, MediaForcedFlags and MediaFlagDelimiters.</param>
         /// <param name="type">The <see cref="DlnaProfileType"/> of the parsed file.</param>
         protected MediaInfoResolver(
@@ -62,6 +65,7 @@ namespace MediaBrowser.Providers.MediaInfo
             ILocalizationManager localizationManager,
             IMediaEncoder mediaEncoder,
             IFileSystem fileSystem,
+            IDirectoryService directoryService,
             NamingOptions namingOptions,
             DlnaProfileType type)
         {
@@ -69,6 +73,7 @@ namespace MediaBrowser.Providers.MediaInfo
             _mediaEncoder = mediaEncoder;
             _fileSystem = fileSystem;
             _namingOptions = namingOptions;
+            _directoryService = directoryService;
             _type = type;
             _externalPathParser = new ExternalPathParser(namingOptions, localizationManager, _type);
         }
@@ -78,14 +83,12 @@ namespace MediaBrowser.Providers.MediaInfo
         /// </summary>
         /// <param name="video">The <see cref="Video"/> object to search external streams for.</param>
         /// <param name="startIndex">The stream index to start adding external streams at.</param>
-        /// <param name="directoryService">The directory service to search for files.</param>
         /// <param name="clearCache">True if the directory service cache should be cleared before searching.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The external streams located.</returns>
         public async Task<IReadOnlyList<MediaStream>> GetExternalStreamsAsync(
             Video video,
             int startIndex,
-            IDirectoryService directoryService,
             bool clearCache,
             CancellationToken cancellationToken)
         {
@@ -94,7 +97,7 @@ namespace MediaBrowser.Providers.MediaInfo
                 return Array.Empty<MediaStream>();
             }
 
-            var pathInfos = GetExternalFiles(video, directoryService, clearCache);
+            var pathInfos = GetExternalFiles(video, clearCache);
 
             if (!pathInfos.Any())
             {
@@ -157,13 +160,11 @@ namespace MediaBrowser.Providers.MediaInfo
         /// </summary>
         /// <param name="audio">The <see cref="Audio"/> object to search external streams for.</param>
         /// <param name="startIndex">The stream index to start adding external streams at.</param>
-        /// <param name="directoryService">The directory service to search for files.</param>
         /// <param name="clearCache">True if the directory service cache should be cleared before searching.</param>
         /// <returns>The external streams located.</returns>
         public IReadOnlyList<MediaStream> GetExternalStreams(
             Audio audio,
             int startIndex,
-            IDirectoryService directoryService,
             bool clearCache)
         {
             if (!audio.IsFileProtocol)
@@ -171,7 +172,7 @@ namespace MediaBrowser.Providers.MediaInfo
                 return Array.Empty<MediaStream>();
             }
 
-            var pathInfos = GetExternalFiles(audio, directoryService, clearCache);
+            var pathInfos = GetExternalFiles(audio, clearCache);
 
             if (pathInfos.Count == 0)
             {
@@ -198,12 +199,10 @@ namespace MediaBrowser.Providers.MediaInfo
         /// Returns the external file infos for the given video.
         /// </summary>
         /// <param name="video">The <see cref="Video"/> object to search external files for.</param>
-        /// <param name="directoryService">The directory service to search for files.</param>
         /// <param name="clearCache">True if the directory service cache should be cleared before searching.</param>
         /// <returns>The external file paths located.</returns>
         public IReadOnlyList<ExternalPathParserResult> GetExternalFiles(
             Video video,
-            IDirectoryService directoryService,
             bool clearCache)
         {
             if (!video.IsFileProtocol)
@@ -218,12 +217,12 @@ namespace MediaBrowser.Providers.MediaInfo
                 return Array.Empty<ExternalPathParserResult>();
             }
 
-            var files = directoryService.GetFilePaths(folder, clearCache, true).ToList();
+            var files = _directoryService.GetFilePaths(folder, clearCache, true).ToList();
             files.Remove(video.Path);
             var internalMetadataPath = video.GetInternalMetadataPath();
             if (_fileSystem.DirectoryExists(internalMetadataPath))
             {
-                files.AddRange(directoryService.GetFilePaths(internalMetadataPath, clearCache, true));
+                files.AddRange(_directoryService.GetFilePaths(internalMetadataPath, clearCache, true));
             }
 
             if (files.Count == 0)
@@ -256,12 +255,10 @@ namespace MediaBrowser.Providers.MediaInfo
         /// Returns the external file infos for the given audio.
         /// </summary>
         /// <param name="audio">The <see cref="Audio"/> object to search external files for.</param>
-        /// <param name="directoryService">The directory service to search for files.</param>
         /// <param name="clearCache">True if the directory service cache should be cleared before searching.</param>
         /// <returns>The external file paths located.</returns>
         public IReadOnlyList<ExternalPathParserResult> GetExternalFiles(
             Audio audio,
-            IDirectoryService directoryService,
             bool clearCache)
         {
             if (!audio.IsFileProtocol)
@@ -270,12 +267,12 @@ namespace MediaBrowser.Providers.MediaInfo
             }
 
             string folder = audio.ContainingFolderPath;
-            var files = directoryService.GetFilePaths(folder, clearCache, true).ToList();
+            var files = _directoryService.GetFilePaths(folder, clearCache, true).ToList();
             files.Remove(audio.Path);
             var internalMetadataPath = audio.GetInternalMetadataPath();
             if (_fileSystem.DirectoryExists(internalMetadataPath))
             {
-                files.AddRange(directoryService.GetFilePaths(internalMetadataPath, clearCache, true));
+                files.AddRange(_directoryService.GetFilePaths(internalMetadataPath, clearCache, true));
             }
 
             if (files.Count == 0)

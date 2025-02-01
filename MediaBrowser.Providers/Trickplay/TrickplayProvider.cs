@@ -27,6 +27,7 @@ public class TrickplayProvider : ICustomMetadataProvider<Episode>,
     private readonly IServerConfigurationManager _config;
     private readonly ITrickplayManager _trickplayManager;
     private readonly ILibraryManager _libraryManager;
+    private readonly IDirectoryService _directoryService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TrickplayProvider"/> class.
@@ -34,14 +35,17 @@ public class TrickplayProvider : ICustomMetadataProvider<Episode>,
     /// <param name="config">The configuration manager.</param>
     /// <param name="trickplayManager">The trickplay manager.</param>
     /// <param name="libraryManager">The library manager.</param>
+    /// <param name="directoryService">The directory service.</param>
     public TrickplayProvider(
         IServerConfigurationManager config,
         ITrickplayManager trickplayManager,
-        ILibraryManager libraryManager)
+        ILibraryManager libraryManager,
+        IDirectoryService directoryService)
     {
         _config = config;
         _trickplayManager = trickplayManager;
         _libraryManager = libraryManager;
+        _directoryService = directoryService;
     }
 
     /// <inheritdoc />
@@ -51,11 +55,11 @@ public class TrickplayProvider : ICustomMetadataProvider<Episode>,
     public int Order => 100;
 
     /// <inheritdoc />
-    public bool HasChanged(BaseItem item, IDirectoryService directoryService)
+    public bool HasChanged(BaseItem item)
     {
         if (item.IsFileProtocol)
         {
-            var file = directoryService.GetFile(item.Path);
+            var file = _directoryService.GetFile(item.Path);
             if (file is not null && item.DateModified != file.LastWriteTimeUtc)
             {
                 return true;

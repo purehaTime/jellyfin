@@ -103,12 +103,11 @@ namespace MediaBrowser.Providers.Manager
         public bool ValidateImages(BaseItem item, IEnumerable<IImageProvider> providers, ImageRefreshOptions refreshOptions)
         {
             var hasChanges = false;
-            var directoryService = refreshOptions?.DirectoryService;
 
             if (item is not Photo)
             {
                 var images = providers.OfType<ILocalImageProvider>()
-                    .SelectMany(i => i.GetImages(item, directoryService))
+                    .SelectMany(i => i.GetImages(item))
                     .ToList();
 
                 if (MergeImages(item, images, refreshOptions))

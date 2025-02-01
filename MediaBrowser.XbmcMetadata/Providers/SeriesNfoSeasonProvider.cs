@@ -61,7 +61,7 @@ namespace MediaBrowser.XbmcMetadata.Providers
         }
 
         /// <inheritdoc />
-        protected override FileSystemMetadata? GetXmlFile(ItemInfo info, IDirectoryService directoryService)
+        protected override FileSystemMetadata? GetXmlFile(ItemInfo info)
         {
             var seasonPath = info.Path;
             if (seasonPath is not null)
@@ -69,7 +69,7 @@ namespace MediaBrowser.XbmcMetadata.Providers
                 var path = Path.Combine(seasonPath, "tvshow.nfo");
                 if (Path.Exists(path))
                 {
-                    return directoryService.GetFile(path);
+                    return _directoryService.GetFile(path);
                 }
             }
 
@@ -79,7 +79,7 @@ namespace MediaBrowser.XbmcMetadata.Providers
                 var path = Path.Combine(seriesPath, "tvshow.nfo");
                 if (Path.Exists(path))
                 {
-                    return directoryService.GetFile(path);
+                    return _directoryService.GetFile(path);
                 }
             }
 

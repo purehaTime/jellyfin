@@ -57,7 +57,7 @@ namespace MediaBrowser.XbmcMetadata.Providers
         }
 
         /// <inheritdoc />
-        protected override FileSystemMetadata? GetXmlFile(ItemInfo info, IDirectoryService directoryService)
-            => directoryService.GetFile(Path.Combine(info.Path, "album.nfo"));
+        protected override FileSystemMetadata? GetXmlFile(ItemInfo info)
+            => _directoryService.GetFile(Path.Combine(info.Path, "album.nfo"));
     }
 }

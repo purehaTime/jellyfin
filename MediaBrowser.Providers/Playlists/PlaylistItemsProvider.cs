@@ -29,6 +29,7 @@ public class PlaylistItemsProvider : ILocalMetadataProvider<Playlist>,
     private readonly IFileSystem _fileSystem;
     private readonly ILibraryManager _libraryManager;
     private readonly ILogger<PlaylistItemsProvider> _logger;
+    private readonly IDirectoryService _directoryService;
     private readonly CollectionType[] _ignoredCollections = [CollectionType.livetv, CollectionType.boxsets, CollectionType.playlists];
 
     /// <summary>
@@ -37,11 +38,13 @@ public class PlaylistItemsProvider : ILocalMetadataProvider<Playlist>,
     /// <param name="logger">Instance of the <see cref="ILogger{PlaylistItemsProvider}"/> interface.</param>
     /// <param name="libraryManager">Instance of the <see cref="ILibraryManager"/> interface.</param>
     /// <param name="fileSystem">Instance of the <see cref="IFileSystem"/> interface.</param>
-    public PlaylistItemsProvider(ILogger<PlaylistItemsProvider> logger, ILibraryManager libraryManager, IFileSystem fileSystem)
+    /// <param name="directoryService">The directory service.</param>
+    public PlaylistItemsProvider(ILogger<PlaylistItemsProvider> logger, ILibraryManager libraryManager, IFileSystem fileSystem, IDirectoryService directoryService)
     {
         _logger = logger;
         _libraryManager = libraryManager;
         _fileSystem = fileSystem;
+        _directoryService = directoryService;
     }
 
     /// <inheritdoc />
@@ -53,7 +56,6 @@ public class PlaylistItemsProvider : ILocalMetadataProvider<Playlist>,
     /// <inheritdoc />
     public Task<MetadataResult<Playlist>> GetMetadata(
         ItemInfo info,
-        IDirectoryService directoryService,
         CancellationToken cancellationToken)
     {
         var result = new MetadataResult<Playlist>()
@@ -209,12 +211,12 @@ public class PlaylistItemsProvider : ILocalMetadataProvider<Playlist>,
     }
 
     /// <inheritdoc />
-    public bool HasChanged(BaseItem item, IDirectoryService directoryService)
+    public bool HasChanged(BaseItem item)
     {
         var path = item.Path;
         if (!string.IsNullOrWhiteSpace(path) && item.IsFileProtocol)
         {
-            var file = directoryService.GetFile(path);
+            var file = _directoryService.GetFile(path);
             if (file is not null && file.LastWriteTimeUtc != item.DateModified)
             {
                 _logger.LogDebug("Refreshing {Path} due to date modified timestamp change.", path);

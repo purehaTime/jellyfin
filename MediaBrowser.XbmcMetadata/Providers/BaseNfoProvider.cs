@@ -26,12 +26,11 @@ namespace MediaBrowser.XbmcMetadata.Providers
         /// <inheritdoc />
         public Task<MetadataResult<T>> GetMetadata(
             ItemInfo info,
-            IDirectoryService directoryService,
             CancellationToken cancellationToken)
         {
             var result = new MetadataResult<T>();
 
-            var file = GetXmlFile(info, directoryService);
+            var file = GetXmlFile(info);
 
             if (file is null)
             {
@@ -63,9 +62,9 @@ namespace MediaBrowser.XbmcMetadata.Providers
         }
 
         /// <inheritdoc />
-        public bool HasChanged(BaseItem item, IDirectoryService directoryService)
+        public bool HasChanged(BaseItem item)
         {
-            var file = GetXmlFile(new ItemInfo(item), directoryService);
+            var file = GetXmlFile(new ItemInfo(item));
 
             if (file is null)
             {
@@ -77,6 +76,6 @@ namespace MediaBrowser.XbmcMetadata.Providers
 
         protected abstract void Fetch(MetadataResult<T> result, string path, CancellationToken cancellationToken);
 
-        protected abstract FileSystemMetadata? GetXmlFile(ItemInfo info, IDirectoryService directoryService);
+        protected abstract FileSystemMetadata? GetXmlFile(ItemInfo info);
     }
 }

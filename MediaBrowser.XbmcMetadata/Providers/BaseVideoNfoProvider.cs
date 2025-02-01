@@ -57,10 +57,10 @@ namespace MediaBrowser.XbmcMetadata.Providers
         }
 
         /// <inheritdoc />
-        protected override FileSystemMetadata? GetXmlFile(ItemInfo info, IDirectoryService directoryService)
+        protected override FileSystemMetadata? GetXmlFile(ItemInfo info)
         {
             return MovieNfoSaver.GetMovieSavePaths(info)
-                .Select(directoryService.GetFile)
+                .Select(_directoryService.GetFile)
                 .FirstOrDefault(i => i is not null);
         }
     }

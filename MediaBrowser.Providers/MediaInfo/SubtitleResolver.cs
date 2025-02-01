@@ -1,6 +1,7 @@
 using Emby.Naming.Common;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.MediaEncoding;
+using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Dlna;
 using MediaBrowser.Model.Globalization;
 using MediaBrowser.Model.IO;
@@ -20,18 +21,21 @@ namespace MediaBrowser.Providers.MediaInfo
         /// <param name="localizationManager">The localization manager.</param>
         /// <param name="mediaEncoder">The media encoder.</param>
         /// <param name="fileSystem">The file system.</param>
+        /// <param name="directoryService">The directory service.</param>
         /// <param name="namingOptions">The <see cref="NamingOptions"/> object containing FileExtensions, MediaDefaultFlags, MediaForcedFlags and MediaFlagDelimiters.</param>
         public SubtitleResolver(
             ILogger<SubtitleResolver> logger,
             ILocalizationManager localizationManager,
             IMediaEncoder mediaEncoder,
             IFileSystem fileSystem,
+            IDirectoryService directoryService,
             NamingOptions namingOptions)
             : base(
                 logger,
                 localizationManager,
                 mediaEncoder,
                 fileSystem,
+                directoryService,
                 namingOptions,
                 DlnaProfileType.Subtitle)
         {

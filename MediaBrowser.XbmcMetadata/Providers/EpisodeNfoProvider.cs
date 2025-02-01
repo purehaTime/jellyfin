@@ -57,11 +57,11 @@ namespace MediaBrowser.XbmcMetadata.Providers
         }
 
         /// <inheritdoc />
-        protected override FileSystemMetadata? GetXmlFile(ItemInfo info, IDirectoryService directoryService)
+        protected override FileSystemMetadata? GetXmlFile(ItemInfo info)
         {
             var path = Path.ChangeExtension(info.Path, ".nfo");
 
-            return directoryService.GetFile(path);
+            return _directoryService.GetFile(path);
         }
     }
 }

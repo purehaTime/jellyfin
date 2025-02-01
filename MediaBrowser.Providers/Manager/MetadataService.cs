@@ -58,7 +58,7 @@ namespace MediaBrowser.Providers.Manager
 
         public virtual int Order => 0;
 
-        private FileSystemMetadata TryGetFile(string path, IDirectoryService directoryService)
+        private FileSystemMetadata TryGetFile(string path)
         {
             try
             {
@@ -196,7 +196,7 @@ namespace MediaBrowser.Providers.Manager
             {
                 if (item.IsFileProtocol)
                 {
-                    var file = TryGetFile(item.Path, refreshOptions.DirectoryService);
+                    var file = TryGetFile(item.Path);
                     if (file is not null)
                     {
                         item.DateModified = file.LastWriteTimeUtc;
@@ -553,7 +553,7 @@ namespace MediaBrowser.Providers.Manager
                     {
                         if (i is IHasItemChangeMonitor hasFileChangeMonitor)
                         {
-                            return HasChanged(item, hasFileChangeMonitor, options.DirectoryService);
+                            return HasChanged(item, hasFileChangeMonitor);
                         }
 
                         return false;
@@ -875,11 +875,11 @@ namespace MediaBrowser.Providers.Manager
             }
         }
 
-        private bool HasChanged(BaseItem item, IHasItemChangeMonitor changeMonitor, IDirectoryService directoryService)
+        private bool HasChanged(BaseItem item, IHasItemChangeMonitor changeMonitor)
         {
             try
             {
-                var hasChanged = changeMonitor.HasChanged(item, directoryService);
+                var hasChanged = changeMonitor.HasChanged(item);
 
                 if (hasChanged)
                 {
